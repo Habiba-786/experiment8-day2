@@ -1,0 +1,161 @@
+# app.py
+from flask import Flask, render_template, request, redirect, url_for
+
+app = Flask(__name__)
+students = []
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        course = request.form["course"]
+        students.append({"name": name, "email": email, "course": course})
+        return redirect(url_for("students_list"))
+    return render_template("register.html")
+
+@app.route("/students")
+def students_list():
+    return render_template("students.html", students=students)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Registration Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Student Registration</h1>
+        <a href="/register" class="btn">Register Student</a>
+        <a href="/students" class="btn">View Students</a>
+    </div>
+</body>
+</html>
+<!-- templates/register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Register New Student</h1>
+        <form method="POST" class="form-box">
+            <label>Name:</label>
+            <input type="text" name="name" required><br>
+            <label>Email:</label>
+            <input type="email" name="email" required><br>
+            <label>Course:</label>
+            <input type="text" name="course" required><br>
+            <button type="submit" class="btn">Register</button>
+        </form>
+        <a href="/" class="btn">Back to Home</a>
+    </div>
+</body>
+</html>
+<!-- templates/students.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registered Students</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Registered Students</h1>
+        {% if students %}
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                </tr>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.course }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No students registered yet.</p>
+        {% endif %}
+        <a href="/" class="btn">Back to Home</a>
+    </div>
+</body>
+</html>
+/* static/style.css */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    margin-top: 30px;
+}
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+.form-box {
+    background-color: white;
+    width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+}
+input {
+    width: 90%;
+    padding: 8px;
+    margin: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 60%;
+    background-color: white;
+    box-shadow: 0 0 10px gray;
+    border-radius: 8px;
+}
+table, th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+.btn:hover {
+    background-color: #45a049;
+}
+
+
